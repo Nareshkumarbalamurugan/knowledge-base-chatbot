@@ -1,0 +1,8 @@
+streamlit>=1.37
+chromadb>=0.5
+sentence-transformers>=3.0
+ollama>=0.3
+pypdf>=4.2
+python-docx>=1.1
+markdown>=3.6
+tqdm>=4.66
