@@ -5,4 +5,5 @@ vectorstore/*
 !vectorstore/.gitkeep
 data/documents/*
 !data/documents/.gitkeep
+.env
 .DS_Store
