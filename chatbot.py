@@ -7,11 +7,35 @@ knowledge base, so this also works as a day-to-day personal chatbot.
 """
 
 import os
+import threading
 
 import chromadb
 from chromadb.utils import embedding_functions
 
 import config
+
+_lock = threading.Lock()
+_client = None
+_embed_fn = None
+
+
+def get_chroma_client():
+    global _client
+    with _lock:
+        if _client is None:
+            _client = chromadb.PersistentClient(path=str(config.VECTORSTORE_DIR))
+        return _client
+
+
+def get_embed_fn():
+    global _embed_fn
+    with _lock:
+        if _embed_fn is None:
+            _embed_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
+                model_name=config.EMBEDDING_MODEL
+            )
+        return _embed_fn
+
 
 RAG_SYSTEM_PROMPT = (
     "You are the user's personal assistant. You have access to a knowledge "
@@ -71,10 +95,8 @@ class LLMProvider:
 class KnowledgeBaseChatbot:
     def __init__(self, provider: str = None):
         self.llm = LLMProvider(provider)
-        embed_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
-            model_name=config.EMBEDDING_MODEL
-        )
-        client = chromadb.PersistentClient(path=str(config.VECTORSTORE_DIR))
+        embed_fn = get_embed_fn()
+        client = get_chroma_client()
         try:
             self.collection = client.get_collection(
                 name=config.COLLECTION_NAME, embedding_function=embed_fn

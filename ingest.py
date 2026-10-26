@@ -195,13 +195,13 @@ def chunk_text(text: str, chunk_size_tokens: int, overlap_tokens: int) -> list[s
 # --------------------------------------------------------------------------
 
 def _get_embed_fn():
-    return embedding_functions.SentenceTransformerEmbeddingFunction(
-        model_name=config.EMBEDDING_MODEL
-    )
+    from chatbot import get_embed_fn
+    return get_embed_fn()
 
 
 def _get_client():
-    return chromadb.PersistentClient(path=str(config.VECTORSTORE_DIR))
+    from chatbot import get_chroma_client
+    return get_chroma_client()
 
 
 def build_vectorstore():
